@@ -1,0 +1,28 @@
+import { Router } from "express";
+import { register, login, updateProfilePicture, updateUserProfile, getUserAndProfile } from "../controllers/users.controller.js";
+import multer from 'multer';
+
+const router = Router();
+
+//multer config
+const storage = multer.diskStorage({
+    destination: function (req, file, cb) {
+        cb(null, 'uploads/')
+    },
+    filename: function (req, file, cb) {
+        cb(null, Date.now() + file.originalname)
+    }
+})
+//multer middleware
+const upload = multer({ storage: storage })
+
+//routes
+router.route("/update_profile_picture")
+    .post(upload.single("profile_picture"), updateProfilePicture)
+
+router.route("/register").post(register)
+router.route("/login").post(login)
+router.route("/user_update").post(updateUserProfile)
+router.route("/get_user_and_profile").get(getUserAndProfile)
+
+export default router;

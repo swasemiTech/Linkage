@@ -26,9 +26,10 @@ const PostSchema = new mongoose.Schema({
         type: String,
         default: ""
     },
+    // If we found anything unusual in media, that user have uploaded, Then we cannot directly delete whole data of that user from database. So we basically flase The active parameter, so that the data of that use Will stay in the database But he cannot access his post.
     active: {
-        type: String,
-        default: ""
+        type: Boolean,
+        default: true
     },
     fileType: {
         type: String,

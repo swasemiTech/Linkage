@@ -95,20 +95,20 @@ export const login = async (req, res) => {
         }
 
         const token = crypto.randomBytes(32).toString("hex");
-        await User.updateOne({ _id: user._id, $set: { token } });
+        await User.updateOne({ _id: user._id }, { $set: { token } });
 
-        return res.status(200).json({ Message: "User logged in successfully" });
-    } catch (e) {
-        return res.status(500).json({ Message: "Something went wrong in login controller : " + e.message });
-    }
+    return res.status(200).json({ Message: "User logged in successfully" });
+} catch (e) {
+    return res.status(500).json({ Message: "Something went wrong in login controller : " + e.message });
+}
 }
 
 //Update Profile Picture Controller
 export const updateProfilePicture = async (req, res) => {
-    const { Token } = req.body;
+    const { token } = req.body;
 
     try {
-        const user = await User.findOne({ Token });
+        const user = await User.findOne({ token });
         if (!user) {
             return res.status(404).json({ Message: "User not found" });
         }
@@ -125,10 +125,10 @@ export const updateProfilePicture = async (req, res) => {
 //Update User Profile Controller
 export const updateUserProfile = async (req, res) => {
 
-    const { Token, ...newUserData } = req.body;
+    const { token, ...newUserData } = req.body;
     try {
 
-        const user = await User.findOne({ Token });
+        const user = await User.findOne({ token });
 
         if (!user) {
             return res.status(404).json({ Message: "User not found" });
@@ -154,9 +154,9 @@ export const updateUserProfile = async (req, res) => {
 
 //Get User and Profile Controller
 export const getUserAndProfile = async (req, res) => {
-    const { Token } = req.query;
+    const { token } = req.query;
     try {
-        const user = await User.findOne({ Token });
+        const user = await User.findOne({ token });
         if (!user) {
             return res.status(404).json({ Message: "User not found" });
         }
@@ -170,9 +170,9 @@ export const getUserAndProfile = async (req, res) => {
 
 //Update Profile Data Controller
 export const updateProfileData = async (req, res) => {
-    const { Token, ...newProfileData } = req.body;
+    const { token, ...newProfileData } = req.body;
     try {
-        const user = await User.findOne({ Token });
+        const user = await User.findOne({ token });
         if (!user) {
             return res.status(404).json({ Message: "User not found" });
         }

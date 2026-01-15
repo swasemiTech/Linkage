@@ -1,7 +1,7 @@
 # this is an file in which i can test all the routes and for this file downlod the REST client extension in vscode.
 
 # Register
-POST http://localhost:9080/register HTTP/1.1
+POST http://localhost:4000/register HTTP/1.1
 Content-Type: application/json
 
 {
@@ -12,7 +12,7 @@ Content-Type: application/json
 }
 ###
 
-POST http://localhost:9080/register HTTP/1.1
+POST http://localhost:4000/register HTTP/1.1
 Content-Type: application/json
 
 {
@@ -26,7 +26,7 @@ Content-Type: application/json
 
 # login
 
-POST http://localhost:9080/login HTTP/1.1
+POST http://localhost:4000/login HTTP/1.1
 Content-Type: application/json
 
 {
@@ -35,7 +35,7 @@ Content-Type: application/json
 }
 ###
 
-POST http://localhost:9080/login HTTP/1.1
+POST http://localhost:4000/login HTTP/1.1
 Content-Type: application/json
 
 {
@@ -47,7 +47,7 @@ Content-Type: application/json
 
 # get user and profile
 
-GET http://localhost:9080/get_user_and_profile HTTP/1.1
+GET http://localhost:4000/get_user_and_profile HTTP/1.1
 Content-Type: application/json
 
 {
@@ -55,7 +55,7 @@ Content-Type: application/json
 }
 
 ###
-GET http://localhost:9080/get_user_and_profile HTTP/1.1
+GET http://localhost:4000/get_user_and_profile HTTP/1.1
 Content-Type: application/json
 
 {
@@ -67,7 +67,7 @@ Content-Type: application/json
 
 # update profile data
 
-POST http://localhost:9080/update_profile_data HTTP/1.1
+POST http://localhost:4000/update_profile_data HTTP/1.1
 Content-Type: application/json
 
 {
@@ -95,10 +95,10 @@ Content-Type: application/json
 
 # get all users profile
 
-GET http://localhost:9080/user/get_all_users_profiles HTTP/1.1
+GET http://localhost:4000/user/get_all_users_profiles HTTP/1.1
 Content-Type: application/json
 
 ###
 
-GET http://localhost:9080/posts HTTP/1.1
+GET http://localhost:4000/posts HTTP/1.1
 Content-Type: application/json

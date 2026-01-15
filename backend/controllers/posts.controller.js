@@ -47,11 +47,11 @@ export const getAllPosts = async (req, res) => {
 }
 
 //delete post controller
-export const deletePost = async (req,res) => {
-    const {token, post_id} = req.body;
+export const deletePost = async (req, res) => {
+    const { token, post_id } = req.body;
 
     try {
-        const user = User.findOne({token});
+        const user = User.findOne({ token });
         if (!user) {
             return res.status(404).json({ message: "User not found" });
         }
@@ -66,9 +66,54 @@ export const deletePost = async (req,res) => {
         }
 
         await post.remove();
-        
+
         return res.status(200).json({ message: "Post deleted successfully" });
     } catch (error) {
         return res.status(500).json({ message: "Something went wrong in delete post controller" + error.message });
+    }
+}
+
+//get comment by post
+export const getCommentByPost = async (req, res) => {
+    const { post_id } = req.body;
+    //we dont need token here because even if we are unauthorized we can get the comments
+    try {
+        const post = await Post.findById(post_id);
+        if (!post) {
+            return res.status(404).json({ message: "Post not found" });
+        }
+
+        const comments = await Comment.find({ postId: post_id })
+            .populate('userId', 'name username email profilePicture');
+
+        return res.status(200).json({ comments });
+    } catch (error) {
+        return res.status(500).json({ message: "Something went wrong in get comment by post controller" + error.message });
+    }
+}
+
+//delete comment controller
+export const deleteComment = async (req, res) => {
+    const { token, comment_id } = req.body;
+    try {
+        const user = User.findOne({ token });
+        if (!user) {
+            return res.status(404).json({ message: "User not found" });
+        }
+
+        const comment = await Comment.findById(comment_id);
+        if (!comment) {
+            return res.status(404).json({ message: "Comment not found" });
+        }
+
+        if (comment.userId.toString() !== user._id.toString()) {
+            return res.status(401).json({ message: "Unauthorized" });
+        }
+
+        await comment.remove();
+
+        return res.status(200).json({ message: "Comment deleted successfully" });
+    } catch (error) {
+        return res.status(500).json({ message: "Something went wrong in delete comment controller" + error.message });
     }
 }

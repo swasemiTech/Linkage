@@ -5,7 +5,8 @@ import bcrypt from "bcrypt";
 import crypto from "crypto";
 import fs from "fs";
 import PDFDocument from "pdfkit";
-
+import Post from "../models/posts.model.js";
+import Comment from "../models/comments.model.js";
 
 //convert profile to pdf
 const convertProfileToPDF = async (profileData) => {
@@ -307,5 +308,29 @@ export const acceptConnectionRequest = async (req, res) => {
         }
     } catch (error) {
         return res.status(500).json({ Message: "Something went wrong in acceptConnectionRequest controller : " + error.message });
+    }
+}
+
+//comment on post controller
+export const commentPost = async (req, res) => {
+    const { token, postId, commentBody } = req.body;
+    try {
+        const user = await User.findOne({ token });
+        if (!user) {
+            return res.status(404).json({ Message: "User not found" });
+        }
+        const post = await Post.findOne({ _id: postId });
+        if (!post) {
+            return res.status(404).json({ Message: "Post not found" });
+        }
+        const comment = new Comment({
+            userId: user._id,
+            postId: postId,
+            comment: commentBody,
+        })
+        await comment.save();
+        return res.status(200).json({ Message: "Comment added successfully" });
+    } catch (error) {
+        return res.status(500).json({ Message: "Something went wrong in commentPost controller : " + error.message });
     }
 }

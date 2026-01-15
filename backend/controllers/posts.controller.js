@@ -117,3 +117,21 @@ export const deleteComment = async (req, res) => {
         return res.status(500).json({ message: "Something went wrong in delete comment controller" + error.message });
     }
 }
+
+//increament likes controller
+export const increamentLikes = async (req, res) => {
+    const { post_id } = req.body; //we dont need user token here because even if we are no the owner of the post we can like the post.
+    try {
+        const post = await Post.findById(post_id);
+        if (!post) {
+            return res.status(404).json({ message: "Post not found" });
+        }
+
+        post.likes = post.likes + 1;
+        await post.save();
+
+        return res.status(200).json({ message: "Post liked successfully" });
+    } catch (error) {
+        return res.status(500).json({ message: "Something went wrong in increament likes controller" + error.message });
+    }
+}

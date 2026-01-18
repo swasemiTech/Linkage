@@ -15,6 +15,10 @@
 }
 
 .mainContainer__left{
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
     flex: 0.5;
 }
 .mainContainer__right{
@@ -45,6 +49,11 @@
     border-radius: 0.5rem;
     cursor: pointer;
     margin-top: 1rem;
+}
+.mainContainer__left > div.buttonJoin:hover{
+    transition: all 0.2s ease-in-out;
+    background-color: #426ccd;
+    box-shadow: 0 0 0.3rem #426ccd;
 }
 
 .mainContainer__left > div.buttonJoin > p{

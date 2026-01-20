@@ -43,7 +43,7 @@ const Login = () => {
     const handleRegister = () => {
         dispatch(registerUser({ username, name, email, password }));
     }
-
+    //Login Handler Logic
     const handleLogin = () => {
         dispatch(loginUser({ email, password }));
     }

@@ -2,8 +2,11 @@
 import React from 'react'
 import styles from './navbar.module.css'
 import { useRouter } from 'next/navigation';
+import { useSelector } from 'react-redux';
 
 const Navbar = () => {
+
+    const authState = useSelector((state) => state.auth);
     const router = useRouter();
 
     return (
@@ -13,11 +16,21 @@ const Navbar = () => {
 
 
                 <div className={styles.NavbarOptionsContainer}>
-                    <div
-                        onClick={() => { router.push("/login") }}
-                        className={styles.buttonJoin}
-                    >
-                        Login</div>
+                    {
+                        authState.loggedIn ? (
+                            <div
+                                style={{ display: "flex", gap: "1rem" }}>
+                                <p>Hey, {authState.user?.userId?.name || "Guest"}</p>
+                                <p style={{ color: "#000", cursor: "pointer", fontWeight: "bold" }}>Profile</p>
+                            </div>
+                        ) : (
+                            <div
+                                onClick={() => { router.push("/login") }}
+                                className={styles.buttonJoin}>
+                                Login
+                            </div>
+                        )
+                    }
                 </div>
             </nav>
         </div>

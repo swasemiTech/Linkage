@@ -169,3 +169,240 @@
 .actionButton:hover {
     background-color: rgba(0, 0, 0, 0.08);
 }
+
+/* Comments Overlay Popup Styles */
+.overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.6);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+    animation: fadeIn 0.2s ease-out;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+    }
+
+    to {
+        opacity: 1;
+    }
+}
+
+@keyframes slideUp {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.commentsPopup {
+    background-color: white;
+    border-radius: 12px;
+    width: 500px;
+    max-width: 90%;
+    max-height: 70vh;
+    display: flex;
+    flex-direction: column;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+    animation: slideUp 0.25s ease-out;
+}
+
+.commentsPopupHeader {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 16px 20px;
+    border-bottom: 1px solid #e0e0e0;
+}
+
+.commentsPopupHeader h3 {
+    margin: 0;
+    font-size: 18px;
+    font-weight: 600;
+    color: rgba(0, 0, 0, 0.9);
+}
+
+.closeButton {
+    cursor: pointer;
+    color: rgba(0, 0, 0, 0.6);
+    padding: 4px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background 0.2s, color 0.2s;
+}
+
+.closeButton:hover {
+    background-color: rgba(0, 0, 0, 0.08);
+    color: rgba(0, 0, 0, 0.9);
+}
+
+.commentsPopupBody {
+    padding: 12px 0;
+    overflow-y: auto;
+    flex: 1;
+}
+
+.commentItem {
+    display: flex;
+    gap: 12px;
+    padding: 12px 20px;
+    transition: background 0.2s;
+}
+
+.commentItem:hover {
+    background-color: rgba(0, 0, 0, 0.03);
+}
+
+.commentProfilePic {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    object-fit: cover;
+    flex-shrink: 0;
+}
+
+.commentContent {
+    flex: 1;
+    background-color: #f3f3f3;
+    border-radius: 0 12px 12px 12px;
+    padding: 10px 14px;
+}
+
+.commentContent h4 {
+    margin: 0 0 4px 0;
+    font-size: 14px;
+    font-weight: 600;
+    color: rgba(0, 0, 0, 0.9);
+}
+
+.commentContent p {
+    margin: 0;
+    font-size: 14px;
+    color: rgba(0, 0, 0, 0.8);
+    line-height: 1.4;
+}
+
+.noComments {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 48px 20px;
+    color: rgba(0, 0, 0, 0.5);
+    text-align: center;
+}
+
+.noComments svg {
+    margin-bottom: 12px;
+    opacity: 0.5;
+}
+
+.noComments p {
+    margin: 0;
+    font-size: 16px;
+    font-weight: 500;
+}
+
+/* Comment Input Styles */
+.commentInputContainer {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 12px 20px;
+    border-top: 1px solid #e0e0e0;
+    background-color: #fafafa;
+    border-radius: 0 0 12px 12px;
+}
+
+.commentInputProfilePic {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    object-fit: cover;
+    flex-shrink: 0;
+}
+
+.commentInput {
+    flex: 1;
+    border: 1px solid #e0e0e0;
+    border-radius: 20px;
+    padding: 10px 16px;
+    font-size: 14px;
+    outline: none;
+    transition: border-color 0.2s, box-shadow 0.2s;
+    background-color: white;
+}
+
+.commentInput:focus {
+    border-color: #0a66c2;
+    box-shadow: 0 0 0 1px #0a66c2;
+}
+
+.commentInput::placeholder {
+    color: rgba(0, 0, 0, 0.5);
+}
+
+.sendButton {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    background-color: #0a66c2;
+    color: white;
+    cursor: pointer;
+    transition: background-color 0.2s, transform 0.1s;
+    flex-shrink: 0;
+}
+
+.sendButton:hover {
+    background-color: #004182;
+}
+
+.sendButton:active {
+    transform: scale(0.95);
+}
+
+.sendButtonDisabled {
+    background-color: #ccc;
+    cursor: not-allowed;
+}
+
+.sendButtonDisabled:hover {
+    background-color: #ccc;
+}
+
+/* Delete Comment Button */
+.deleteCommentButton {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    color: rgba(0, 0, 0, 0.5);
+    cursor: pointer;
+    transition: background-color 0.2s, color 0.2s;
+    flex-shrink: 0;
+    margin-left: auto;
+}
+
+.deleteCommentButton:hover {
+    background-color: rgba(255, 0, 0, 0.1);
+    color: #dc3545;
+}

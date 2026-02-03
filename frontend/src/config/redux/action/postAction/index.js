@@ -97,3 +97,50 @@ export const getAllComments = createAsyncThunk(
             return thunkAPI.rejectWithValue("Something Went Wrong in getAllComments thunk" + error.response.data.message);
         }
     })
+
+export const addComment = createAsyncThunk(
+    "post/addComment",
+    async (commentData, thunkAPI) => {
+        try {
+            const response = await clientServer.post("/comment", {
+                token: localStorage.getItem("token"),
+                postId: commentData.post_id,
+                commentBody: commentData.body
+            });
+
+            if (response.status === 200) {
+                return thunkAPI.fulfillWithValue({
+                    message: "Comment Added Successfully",
+                    post_id: commentData.post_id
+                });
+            } else {
+                return thunkAPI.rejectWithValue("Comment Not Added");
+            }
+        } catch (error) {
+            return thunkAPI.rejectWithValue("Something Went Wrong in addComment thunk" + error.response?.data?.message);
+        }
+    }
+)
+
+export const deleteComment = createAsyncThunk(
+    "post/deleteComment",
+    async (commentData, thunkAPI) => {
+        try {
+            const response = await clientServer.post("/delete_comment", {
+                token: localStorage.getItem("token"),
+                comment_id: commentData.comment_id
+            });
+
+            if (response.status === 200) {
+                return thunkAPI.fulfillWithValue({
+                    message: "Comment Deleted Successfully",
+                    post_id: commentData.post_id
+                });
+            } else {
+                return thunkAPI.rejectWithValue("Comment Not Deleted");
+            }
+        } catch (error) {
+            return thunkAPI.rejectWithValue("Something Went Wrong in deleteComment thunk" + error.response?.data?.message);
+        }
+    }
+)

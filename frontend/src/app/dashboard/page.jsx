@@ -3,7 +3,8 @@
 import React, { Children, useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { useDispatch, useSelector } from "react-redux";
-import { getAllPosts, deletePost, createPost, increamentPostLikes, getAllComments } from "@/config/redux/action/postAction";
+import { getAllPosts, deletePost, createPost, increamentPostLikes, getAllComments, addComment, deleteComment } from "@/config/redux/action/postAction";
+import { resetPostId } from "@/config/redux/reducer/postReducer";
 import { getAboutUser, getAllUsers } from "@/config/redux/action/authAction";
 import UserLayout from '@/layout/UserLayout/page'
 import DashboardLayout from '@/layout/DashboardLayout/page'
@@ -22,6 +23,7 @@ const Dashboard = () => {
     //useStates
     const [postContent, setPostContent] = useState("");
     const [fileContent, setFileContent] = useState(null);
+    const [commentText, setCommentText] = useState("");
 
     //get all posts from the server logic
     useEffect(() => {
@@ -51,6 +53,29 @@ const Dashboard = () => {
             dispatch(getAllPosts());
         }
     }
+
+    // Handle add comment
+    const handleAddComment = async () => {
+        if (commentText.trim() === "") return;
+        const response = await dispatch(addComment({ post_id: postState.postId, body: commentText }));
+        if (response.meta.requestStatus === "fulfilled") {
+            setCommentText("");
+            // Refresh comments after adding
+            dispatch(getAllComments({ post_id: postState.postId }));
+        }
+    }
+
+    // Handle delete comment
+    const handleDeleteComment = async (comment_id) => {
+        const response = await dispatch(deleteComment({ comment_id, post_id: postState.postId }));
+        if (response.meta.requestStatus === "fulfilled") {
+            // Refresh comments after deleting
+            dispatch(getAllComments({ post_id: postState.postId }));
+        }
+    }
+
+    // Get the current post to check ownership
+    const currentPost = postState.posts.find(p => p._id === postState.postId);
 
 
     if (authState.user?.userId) {
@@ -175,7 +200,80 @@ const Dashboard = () => {
                     </div>
 
                     {postState.postId !== "" &&
-                        <p>Show Comments</p>
+                        <div className={styles.overlay} onClick={() => dispatch(resetPostId())}>
+                            <div className={styles.commentsPopup} onClick={(e) => e.stopPropagation()}>
+                                <div className={styles.commentsPopupHeader}>
+                                    <h3>Comments</h3>
+                                    <div className={styles.closeButton} onClick={() => dispatch(resetPostId())}>
+                                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" width="24" height="24">
+                                            <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
+                                        </svg>
+                                    </div>
+                                </div>
+                                <div className={styles.commentsPopupBody}>
+                                    {postState.comments.length > 0 ? (
+                                        postState.comments.map((comment, index) => (
+                                            <div key={index} className={styles.commentItem}>
+                                                <img
+                                                    className={styles.commentProfilePic}
+                                                    src={`${BASE_URL}/profile_pictures/${comment.userId?.profilePicture}`}
+                                                    alt="Profile"
+                                                    onError={(e) => { e.target.src = "https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_1280.png" }}
+                                                />
+                                                <div className={styles.commentContent}>
+                                                    <h4>{comment.userId?.name || comment.userId?.username || "Unknown User"}</h4>
+                                                    <p>{comment.body}</p>
+                                                </div>
+                                                {/* Delete button - only visible to post owner */}
+                                                {currentPost?.userId?.username === authState.user?.userId?.username && (
+                                                    <div
+                                                        className={styles.deleteCommentButton}
+                                                        onClick={() => handleDeleteComment(comment._id)}
+                                                        title="Delete comment"
+                                                    >
+                                                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" width="18" height="18">
+                                                            <path strokeLinecap="round" strokeLinejoin="round" d="M14.74 9l-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 01-2.244 2.077H8.084a2.25 2.25 0 01-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 00-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 013.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 00-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 00-7.5 0" />
+                                                        </svg>
+                                                    </div>
+                                                )}
+                                            </div>
+                                        ))
+                                    ) : (
+                                        <div className={styles.noComments}>
+                                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" width="48" height="48">
+                                                <path strokeLinecap="round" strokeLinejoin="round" d="M7.5 8.25h9m-9 3H12m-9.75 1.51c0 1.6 1.123 2.994 2.707 3.227 1.129.166 2.27.293 3.423.379.35.026.67.21.865.501L12 21l2.755-4.133a1.14 1.14 0 01.865-.501 48.172 48.172 0 003.423-.379c1.584-.233 2.707-1.626 2.707-3.228V6.741c0-1.602-1.123-2.995-2.707-3.228A48.394 48.394 0 0012 3c-2.392 0-4.744.175-7.043.513C3.373 3.746 2.25 5.14 2.25 6.741v6.018z" />
+                                            </svg>
+                                            <p>No comments yet</p>
+                                        </div>
+                                    )}
+                                </div>
+                                {/* Comment Input */}
+                                <div className={styles.commentInputContainer}>
+                                    <img
+                                        className={styles.commentInputProfilePic}
+                                        src={`${BASE_URL}/profile_pictures/${authState.user?.userId?.profilePicture}`}
+                                        alt="Profile"
+                                        onError={(e) => { e.target.src = "https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_1280.png" }}
+                                    />
+                                    <input
+                                        type="text"
+                                        className={styles.commentInput}
+                                        placeholder="Write a comment..."
+                                        value={commentText}
+                                        onChange={(e) => setCommentText(e.target.value)}
+                                        onKeyDown={(e) => e.key === 'Enter' && handleAddComment()}
+                                    />
+                                    <div
+                                        className={`${styles.sendButton} ${commentText.trim() === "" ? styles.sendButtonDisabled : ""}`}
+                                        onClick={handleAddComment}
+                                    >
+                                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" width="20" height="20">
+                                            <path strokeLinecap="round" strokeLinejoin="round" d="M6 12L3.269 3.126A59.768 59.768 0 0121.485 12 59.77 59.77 0 013.27 20.876L5.999 12zm0 0h7.5" />
+                                        </svg>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
                     }
                 </DashboardLayout>
             </UserLayout >

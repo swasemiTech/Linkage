@@ -88,7 +88,15 @@ export const getCommentByPost = async (req, res) => {
         const comments = await Comment.find({ postId: post_id })
             .populate('userId', 'name username email profilePicture');
 
-        return res.status(200).json({ comments: post.comments });
+        // Transform comments to include body field for frontend compatibility
+        const transformedComments = comments.map(c => ({
+            _id: c._id,
+            userId: c.userId,
+            postId: c.postId,
+            body: c.comment
+        }));
+
+        return res.status(200).json({ comments: transformedComments });
     } catch (error) {
         return res.status(500).json({ message: "Something went wrong in get comment by post controller : " + error.message });
     }
@@ -103,16 +111,23 @@ export const deleteComment = async (req, res) => {
             return res.status(404).json({ message: "User not found" });
         }
 
-        const comment = await Comment.findById(comment_id);
+        const comment = await Comment.findById(comment_id).populate('postId');
         if (!comment) {
             return res.status(404).json({ message: "Comment not found" });
         }
 
-        if (comment.userId.toString() !== user._id.toString()) {
+        // Get the post to check ownership
+        const post = await Post.findById(comment.postId);
+
+        // Allow deletion if user is the comment owner OR the post owner
+        const isCommentOwner = comment.userId.toString() === user._id.toString();
+        const isPostOwner = post && post.userId.toString() === user._id.toString();
+
+        if (!isCommentOwner && !isPostOwner) {
             return res.status(401).json({ message: "Unauthorized" });
         }
 
-        await comment.remove();
+        await Comment.findByIdAndDelete(comment_id);
 
         return res.status(200).json({ message: "Comment deleted successfully" });
     } catch (error) {

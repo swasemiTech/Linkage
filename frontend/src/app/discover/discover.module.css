@@ -1,0 +1,102 @@
+/* Container for the whole page content */
+.container {
+    padding: 1rem;
+    background-color: #f9f9f9; /* LinkedIn's light gray background color */
+    min-height: 100%;
+}
+
+/* Page Title */
+.container h1 {
+    font-size: 1.5rem;
+    font-weight: 400;
+    color: #333;
+    margin-bottom: 1.5rem;
+    padding-left: 0.5rem;
+}
+
+/* The Grid Layout */
+.allUserProfile {
+    display: grid;
+    /* Responsive Grid: Cards will be at least 200px wide and fill the space */
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 1.2rem;
+    width: 100%;
+}
+
+/* Individual User Card */
+.userCard {
+    background-color: white;
+    border-radius: 10px;
+    border: 1px solid #e0e0e0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 1.5rem 1rem;
+    position: relative;
+    transition: box-shadow 0.2s ease, transform 0.2s ease;
+    cursor: pointer;
+    overflow: hidden;
+}
+
+/* Hover Effect for Card */
+.userCard:hover {
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+    transform: translateY(-2px);
+    border-color: #d0d0d0;
+}
+
+/* Profile Image */
+.userCard img {
+    width: 104px;
+    height: 104px;
+    border-radius: 50%;
+    object-fit: cover;
+    margin-bottom: 1rem;
+    border: 3px solid white; /* Creates a clean rim */
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.08);
+}
+
+/* Name (First <p> tag) */
+.userCard p:nth-of-type(1) {
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: rgba(0, 0, 0, 0.9);
+    margin-bottom: 0.3rem;
+    text-align: center;
+    width: 100%;
+    
+    /* Truncate text if it's too long */
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+/* Username/Headline (Second <p> tag) */
+.userCard p:nth-of-type(2) {
+    font-size: 0.9rem;
+    color: rgba(0, 0, 0, 0.6);
+    margin-bottom: 1.5rem;
+    text-align: center;
+}
+
+/* --- Bonus: "Connect" Button Style --- 
+   Even if you don't have the button in JSX yet, 
+   add this class to a button later for the perfect look 
+*/
+.connectBtn {
+    margin-top: auto; /* Pushes button to bottom of card */
+    background-color: white;
+    color: #0a66c2; /* LinkedIn Blue */
+    border: 1px solid #0a66c2;
+    padding: 6px 20px;
+    border-radius: 20px;
+    font-weight: 600;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.connectBtn:hover {
+    background-color: #eef3f8; /* Light blue background on hover */
+    box-shadow: inset 0 0 0 1px #0a66c2; /* Thicker border on hover */
+}

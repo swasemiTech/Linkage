@@ -356,3 +356,19 @@ export const commentPost = async (req, res) => {
         return res.status(500).json({ Message: "Something went wrong in commentPost controller : " + error.message });
     }
 }
+
+export const getUserProfileAndUserBasedOnUsername = async (req, res) => {
+    const { username } = req.query;
+    try {
+        const user = await User.findOne({ username });
+        if (!user) {
+            return res.status(404).json({ Message: "User not found" });
+        }
+        const profile = await Profile.findOne({ userId: user._id })
+            .populate("userId", "name username email profilePicture");
+
+        return res.status(200).json({ Message: "User profile and user found successfully", profile });
+    } catch (error) {
+        return res.status(500).json({ Message: "Something went wrong in getUserProfileAndUserBasedOnUsername controller : " + error.message });
+    }
+}

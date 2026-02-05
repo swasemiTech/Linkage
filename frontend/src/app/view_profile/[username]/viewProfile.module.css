@@ -228,6 +228,22 @@
   font-weight: 500;
 }
 
+/* Connections sidebar section */
+.connectionsList {
+  list-style: none;
+  padding: 0;
+  margin: 0.25rem 0 0;
+}
+
+.connectionItem + .connectionItem {
+  margin-top: 0.3rem;
+}
+
+.requestActions {
+  display: flex;
+  gap: 0.4rem;
+}
+
 /* Responsive adjustments */
 @media (max-width: 900px) {
   .headerContent {

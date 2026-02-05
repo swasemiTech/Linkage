@@ -249,12 +249,22 @@ export const sendConnectionRequest = async (req, res) => {
         if (!ConnectionUser) {
             return res.status(400).json({ Message: "Connection User is not available" });
         }
+        // Check for any existing relationship or pending request in either direction
         const existingRequest = await ConnectionRequest.findOne({
-            userId: user._id,
-            connectionId: ConnectionUser._id,
-        })
+            $or: [
+                { userId: user._id, connectionId: ConnectionUser._id },
+                { userId: ConnectionUser._id, connectionId: user._id }
+            ]
+        });
         if (existingRequest) {
-            return res.status(400).json({ Message: "Connection Request already sent" });
+            if (existingRequest.status_accepted === true) {
+                return res.status(400).json({ Message: "You are already connected with this user" });
+            }
+            if (existingRequest.status_accepted === null) {
+                return res.status(400).json({ Message: "Connection Request already pending" });
+            }
+            // If previously rejected, we could allow a new request; for now, prevent spam.
+            return res.status(400).json({ Message: "A connection decision already exists for this user" });
         }
         const request = new ConnectionRequest({
             userId: user._id,
@@ -287,7 +297,7 @@ export const getMyConnectionRequest = async (req, res) => {
     }
 }
 
-//What are my connections requests controller
+//What are my connection requests controller (requests I have received)
 export const getConnectionRequests = async (req, res) => {
     const { token } = req.query;
 
@@ -304,7 +314,7 @@ export const getConnectionRequests = async (req, res) => {
     }
 }
 
-//accept connection request controller
+//accept / reject connection request controller
 export const acceptConnectionRequest = async (req, res) => {
     const { token, connectionId, action_type } = req.body;
     try {
@@ -312,12 +322,19 @@ export const acceptConnectionRequest = async (req, res) => {
         if (!user) {
             return res.status(404).json({ Message: "User not found" });
         }
+
+        // Here `user` is the receiver of the request, and `connectionId`
+        // is the sender's userId.
         const connectionRequest = await ConnectionRequest.findOne({
-            userId: user._id,
-            connectionId: connectionId,
+            userId: connectionId,
+            connectionId: user._id,
         })
         if (!connectionRequest) {
             return res.status(404).json({ Message: "Connection Request not found" });
+        }
+        // Only allow action on pending requests
+        if (connectionRequest.status_accepted !== null) {
+            return res.status(400).json({ Message: "Connection Request already processed" });
         }
         if (action_type === "accept") {
             connectionRequest.status_accepted = true;
@@ -330,6 +347,60 @@ export const acceptConnectionRequest = async (req, res) => {
         }
     } catch (error) {
         return res.status(500).json({ Message: "Something went wrong in acceptConnectionRequest controller : " + error.message });
+    }
+}
+
+//Get all accepted connections for logged in user
+export const getMyConnections = async (req, res) => {
+    const { token } = req.query;
+    try {
+        const user = await User.findOne({ token });
+        if (!user) {
+            return res.status(404).json({ Message: "User not found" });
+        }
+
+        const connections = await ConnectionRequest.find({
+            status_accepted: true,
+            $or: [
+                { userId: user._id },
+                { connectionId: user._id }
+            ]
+        })
+            .populate("userId", "name username email profilePicture")
+            .populate("connectionId", "name username email profilePicture");
+
+        return res.status(200).json(connections);
+    } catch (error) {
+        return res.status(500).json({ Message: "Something went wrong in getMyConnections controller : " + error.message });
+    }
+}
+
+//Get accepted connections for any user (public profile view)
+export const getUserConnectionsByUserId = async (req, res) => {
+    const { user_id } = req.query;
+    try {
+        if (!user_id) {
+            return res.status(400).json({ Message: "user_id is required" });
+        }
+
+        const user = await User.findById(user_id);
+        if (!user) {
+            return res.status(404).json({ Message: "User not found" });
+        }
+
+        const connections = await ConnectionRequest.find({
+            status_accepted: true,
+            $or: [
+                { userId: user._id },
+                { connectionId: user._id }
+            ]
+        })
+            .populate("userId", "name username email profilePicture")
+            .populate("connectionId", "name username email profilePicture");
+
+        return res.status(200).json(connections);
+    } catch (error) {
+        return res.status(500).json({ Message: "Something went wrong in getUserConnectionsByUserId controller : " + error.message });
     }
 }
 
